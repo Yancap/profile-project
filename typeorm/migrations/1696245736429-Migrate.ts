@@ -30,12 +30,12 @@ export class Migrate1696245736429 implements MigrationInterface {
               },
               { name: "photo", type: "varchar" },
               { name: "subtitle", type: "varchar"},
-              { name: "likes", type: "int" },
-              { name: "user_id", type: "int", unsigned: true }
+              { name: "likes", type: "int", default: 0, unsigned: true },
+              { name: "userId", type: "int", unsigned: true,  }
             ] 
         }))  
         await queryRunner.createForeignKey("posts", new TableForeignKey({
-            columnNames: ["user_id"],
+            columnNames: ["userId"],
             referencedColumnNames: ["id"],
             referencedTableName: "users",
             onDelete: "CASCADE"

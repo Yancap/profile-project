@@ -8,26 +8,28 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UsersEntity } from './components/users/entity/user.entity';
 import { PostsEntity } from './components/posts/entity/posts.entity';
-import { PostsController } from './components/posts/posts.controller';
-import { PostsService } from './components/posts/posts.service';
+import { PostsController } from './components/posts/controller/posts.controller';
+import { PostsService } from './components/posts/service/posts.service';
 import { PostsModule } from './components/posts/posts.module';
+import { AuthModule } from './components/auth/auth.module';
 
 @Module({
   imports: [
     UsersModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: "localhost",
+      host: 'localhost',
       port: 3306,
-      username: "yan123",
+      username: 'yan123',
       password: 'yan123',
       database: 'learnNest',
       entities: [UsersEntity, PostsEntity],
     }),
-    PostsModule
+    PostsModule,
+    AuthModule,
   ],
-  controllers: [AppController, PostsController],
-  providers: [AppService, PostsService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
