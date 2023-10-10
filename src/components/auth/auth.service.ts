@@ -18,6 +18,12 @@ export class AuthService {
   ) {}
 
   createToken(user: UsersEntity) {
+
+    this.jwtService.sign(
+      {
+        
+      }
+    )
     return this.jwtService.sign(
       {
         email: user.email,

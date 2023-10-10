@@ -3,3 +3,10 @@ export interface CreatePostHandler {
   photo: string;
   subtitle: string;
 }
+
+export interface UpdatePostHandler {
+  userId: number;
+  postId: number;
+  photo?: string;
+  subtitle?: string;
+}
