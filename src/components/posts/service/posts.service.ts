@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostsEntity } from '../entity/posts.entity';
 import { Repository } from 'typeorm';
-import { CreatePostHandler, UpdatePostHandler } from './post.service';
+import { CreatePostHandler, DeletePostHandler, UpdatePostHandler } from './post.service';
 
 @Injectable()
 export class PostsService {
@@ -20,22 +20,13 @@ export class PostsService {
         id: data.userId
       }
     });
+    console.log(post);
+    
     return post;
   }
 
   async update(data: UpdatePostHandler){
-    const isThisPostFromUser = await this.postRepository.findOne({
-      where: {
-        id: data.postId,
-        user: {
-          id: data.userId
-        }
-      }
-    })
-
-    if(!isThisPostFromUser) throw new NotFoundException('This post not exist or It is not yours')
-
-    const post = await this.postRepository.update({
+    const result = await this.postRepository.update({
       id: data.postId,
       user: {
         id: data.userId
@@ -44,9 +35,21 @@ export class PostsService {
       photo: data.photo,
       subtitle: data.subtitle,
     });
-    return post;
+    if(result.affected === 0) throw new NotFoundException('This post not exist or It is not yours')
+    return true;
   }
+  
+  async delete(data: DeletePostHandler){     
+    const result = await this.postRepository.delete({
+      id: data.postId,
+      user: {
+        id: data.userId
+      }
+    });
 
+    if(result.affected === 0) throw new NotFoundException('This post not exist or It is not yours')
+    return true;
+  }
   async getAll(){
     return await this.postRepository.find();
   }

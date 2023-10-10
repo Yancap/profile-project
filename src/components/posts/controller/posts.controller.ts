@@ -42,9 +42,9 @@ export class PostsController {
   ){
     try {
       const post = await this.postService.create({ ...body, userId: user.userId });
-      return post;
+      return response.json(post);
     } catch (err) {
-      if (err instanceof HttpException) return response.json( err.getResponse() );
+      if (err instanceof HttpException) return response.status(err.getStatus()).json(err.getResponse());
     }
   }
 
@@ -55,10 +55,10 @@ export class PostsController {
     @Res() response: Response,
   ){
     try {
-      const post = await this.postService.update({ ...body, userId: user.userId });
-      return {post};
+      await this.postService.update({ ...body, userId: user.userId });
+      return response.json({message: "success"})
     } catch (err) {
-      if (err instanceof HttpException) return response.json( err.getResponse() );
+      if (err instanceof HttpException) return response.status(err.getStatus()).json(err.getResponse());
     }
 
   }
@@ -69,11 +69,14 @@ export class PostsController {
     @User() { body, user }: { body: DeletePostDTO; user: ReqUser },
     @Res() response: Response,
   ){
-
     try {
-      return 1;
+      const result = await this.postService.delete({postId: Number(body.postId), userId: user.userId})
+
+      if(result) return response.json({message: "success"})
+      return response.status(205).json({message: "not deleted"});
+
     } catch (err) {
-      if (err instanceof HttpException) return response.json( err.getResponse() );
+      if (err instanceof HttpException) return response.status(err.getStatus()).json(err.getResponse());
     }
 
   }

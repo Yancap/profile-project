@@ -10,3 +10,7 @@ export interface UpdatePostHandler {
   photo?: string;
   subtitle?: string;
 }
+export interface DeletePostHandler {
+  userId: number;
+  postId: number;
+}
