@@ -1,12 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
-import { UsersEntity } from '../users/entity/user.entity';
+import { UsersEntity } from '../../users/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthLoginDTO } from './dto/auth-login.dto';
-import { AuthRegisterDTO } from './dto/auth-register.dto';
-import { AuthResetPasswordDTO } from './dto/auth-reset-password.dto';
-import { UsersService } from './../users/users.service';
+import { AuthLoginDTO } from '../dto/auth-login.dto';
+import { AuthRegisterDTO } from '../dto/auth-register.dto';
+import { AuthResetPasswordDTO } from '../dto/auth-reset-password.dto';
+import { UsersService } from '../../users/users.service';
+import { ResetPasswordService } from './auth.service.d';
 
 @Injectable()
 export class AuthService {
@@ -18,12 +19,6 @@ export class AuthService {
   ) {}
 
   createToken(user: UsersEntity) {
-
-    this.jwtService.sign(
-      {
-        
-      }
-    )
     return this.jwtService.sign(
       {
         email: user.email,
@@ -76,15 +71,24 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email!');
     }
 
-    return user;
+    return this.jwtService.sign(
+      {
+        email: user.email,
+      },
+      {
+        expiresIn: '10 minutes',
+        subject: String(user.id),
+        issuer: 'login',
+        audience: 'users',
+      },
+    );
   }
 
-  async reset({ token, password }: AuthResetPasswordDTO) {
-    const id = 0;
-    const user = await this.usersRepository.update(Number(id), {
+  async reset({ userId, password }: ResetPasswordService) {
+    const newPassword = await this.usersRepository.update(userId, {
       password,
     });
 
-    return;
+    return newPassword;
   }
 }
